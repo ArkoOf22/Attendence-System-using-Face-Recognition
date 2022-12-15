@@ -1,3 +1,4 @@
+
 import cv2  
 import numpy as np
 import face_recognition
@@ -24,7 +25,7 @@ def faceEncodings(images):
 encodeListKnown = faceEncodings(images)
 print('Encoding Complete')
 
-def attendance(name):
+def attendance(name,dStr):
 
     with open('attendance.csv','r+') as f:
         myDataList =f.readlines()
@@ -33,10 +34,9 @@ def attendance(name):
             entry = line.split(',')
             nameList.append(entry[0])
 
-        if name not in nameList:
+        if name and dStr not in nameList:
             time_now =datetime.now()
-            tStr = time_now.strftime('%H:%M:%S')
-            dStr= time_now.strftime('%d/%b/%Y')
+            tStr= time_now.strftime('%d/%b/%Y')
             f.writelines(f'\n{name},\t{dStr},\t{tStr}')
            
 
@@ -57,15 +57,20 @@ while True:
 
         if matches[matchIndex]:
             name=className[matchIndex].upper()
+
+            time_now =datetime.now()#
+            dStr = time_now.strftime('%H:%M:%S')
+            
             
             y1,x2,y2,x1 = faceLoc
             y1,x2,y2,x1 =y1*4,x2*4,y2*4,x1*4
             cv2.rectangle(img,(x1,y1),(x2,y2),(0,255,0),2)
             cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,255,0),cv2.FILLED)
             cv2.putText(img, name,(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
-            attendance(name)
+            attendance(name,dStr)
     cv2.imshow("Camera", img)
     if cv2.waitKey(0) == 13:
         break
+
 cap.release()
 cv2.destroyAllWindows()
